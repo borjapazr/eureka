@@ -17,7 +17,7 @@ const DatabaseConfig = {
   DB_PORT: getEnvironmentNumber('DB_PORT', 5432),
   DB_USER: getEnvironmentString('DB_USER', 'mars-user'),
   DB_PASSWORD: getEnvironmentString('DB_PASSWORD', 'mars-password'),
-  DB_NAME: getEnvironmentString('DB_NAME', 'express-typescript-skeleton-db')
+  DB_NAME: getEnvironmentString('DB_NAME', 'eureka')
 };
 
 export { DatabaseConfig, GlobalConfig };

@@ -1,7 +1,7 @@
 {
-  "name": "express-typescript-skeleton",
-  "version": "2.2.1",
-  "description": "🔰🦸 Template to start developing a REST API with Node.js (Express), TypeScript, ESLint, Prettier, Husky, Prisma, etc.",
+  "name": "eureka",
+  "version": "0.0.1-SNAPSHOT",
+  "description": "📚👩‍💻 Management platform for internship academies",
   "author": {
     "name": "Borja Paz Rodríguez",
     "email": "borjapazr@gmail.com",
@@ -15,9 +15,12 @@
     "husky",
     "prettier",
     "docker",
-    "makefile"
+    "makefile",
+    "intership",
+    "academy",
+    "eureka"
   ],
-  "repository": "https://github.com/borjapazr/express-typescript-skeleton",
+  "repository": "https://github.com/borjapazr/eureka",
   "main": "dist/index.js",
   "files": [
     "dist",

@@ -49,12 +49,12 @@ start: install ## Start application in development mode
 .PHONY: start/db
 start/db: ## Start database container
 	@echo "▶️ Starting database (Docker)..."
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) --env-file .env up -d express-typescript-skeleton-db express-typescript-skeleton-adminer
+	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) --env-file .env up -d eureka-db eureka-adminer
 
 .PHONY: stop/db
 stop/db: ## Stop database container
 	@echo "🛑 Stopping database (Docker)..."
-	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) --env-file .env stop express-typescript-skeleton-db express-typescript-skeleton-adminer
+	@$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) --env-file .env stop eureka-db eureka-adminer
 
 .PHONY: start/prod
 start/prod: ## Start application in production mode

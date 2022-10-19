@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  express-typescript-skeleton:
+  eureka:
     build:
       context: ..
       args:
@@ -9,23 +9,23 @@ services:
       dockerfile: ./docker/Dockerfile
       target: prod
     image: ${IMAGE_NAME}:prod
-    container_name: express-typescript-skeleton
+    container_name: eureka
     restart: always
     depends_on:
-      - express-typescript-skeleton-db
+      - eureka-db
     env_file:
       - ../.env
     environment:
       - TZ=${TZ}
-      - WAIT_HOSTS=express-typescript-skeleton-db:5432
+      - WAIT_HOSTS=eureka-db:5432
     volumes:
       - ${LOGS_VOLUME}:/home/node/app/logs
     ports:
       - ${EXTERNAL_PORT}:${PORT}
 
-  express-typescript-skeleton-db:
+  eureka-db:
     image: postgres:15
-    container_name: express-typescript-skeleton-db
+    container_name: eureka-db
     restart: always
     environment:
       - POSTGRES_USER=${DB_USER}
@@ -36,12 +36,12 @@ services:
     ports:
       - ${DB_PORT}:5432
 
-  express-typescript-skeleton-adminer:
+  eureka-adminer:
     image: adminer
-    container_name: express-typescript-skeleton-adminer
+    container_name: eureka-adminer
     restart: always
     environment:
-      - ADMINER_DEFAULT_SERVER=express-typescript-skeleton-db
+      - ADMINER_DEFAULT_SERVER=eureka-db
       - TZ=${TZ}
     ports:
       - ${DB_MANAGER_PORT}:8080

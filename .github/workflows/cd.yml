@@ -46,7 +46,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: borjapazr/express-typescript-skeleton
+          images: borjapazr/eureka
 
       - name: 💽 Build and push Docker image
         uses: docker/build-push-action@v3
