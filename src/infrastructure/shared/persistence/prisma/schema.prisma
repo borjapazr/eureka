@@ -1,0 +1,70 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+generator tsed {
+  provider      = "tsed-prisma"
+  binaryTargets = ["native"]
+  //output             = "./generated/tsed"
+  //emitTranspiledCode = false
+}
+
+enum Gender {
+  UNDEFINED
+  MALE
+  FEMALE
+}
+
+enum Role {
+  ADMIN
+  USER
+  AUDITOR
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @db.VarChar(1000)
+  gender        Gender    @default(UNDEFINED)
+  firstName     String    @db.VarChar(255)
+  lastName      String    @db.VarChar(500)
+  birthDate     DateTime  @db.Date
+  username      String    @unique @db.VarChar(100)
+  email         String    @unique @db.VarChar(255)
+  phoneNumber   String    @db.VarChar(100)
+  address       String    @db.VarChar(1500)
+  profilePicUrl String    @db.VarChar(2500)
+  passwordHash  String    @db.VarChar(100)
+  verified      Boolean   @default(false)
+  enabled       Boolean   @default(true)
+  roles         Role[]    @default([USER])
+  createdAt     DateTime? @default(now()) @db.Timestamptz(3)
+  createdBy     String?   @db.VarChar(255)
+  updatedAt     DateTime? @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy     String?   @db.VarChar(255)
+  deletedAt     DateTime? @db.Timestamptz(3)
+  deletedBy     String?   @db.VarChar(255)
+}
+
+model Session {
+  id               Int       @id @default(autoincrement())
+  uuid             String    @unique @db.VarChar(1000)
+  userUuid         String    @db.VarChar(1000)
+  userData         Json      @db.JsonB
+  refreshTokenHash String    @db.VarChar(5000)
+  revokedAt        DateTime? @db.Timestamptz(3)
+  revokedBy        String?   @db.VarChar(255)
+  revocationReason String?   @db.VarChar(1000)
+  expiresAt        DateTime  @db.Timestamptz(3)
+  createdAt        DateTime? @default(now()) @db.Timestamptz(3)
+  createdBy        String?   @db.VarChar(255)
+  updatedAt        DateTime? @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?   @db.VarChar(255)
+  deletedAt        DateTime? @db.Timestamptz(3)
+  deletedBy        String?   @db.VarChar(255)
+}
