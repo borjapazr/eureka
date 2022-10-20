@@ -11,8 +11,6 @@ generator client {
 generator tsed {
   provider      = "tsed-prisma"
   binaryTargets = ["native"]
-  //output             = "./generated/tsed"
-  //emitTranspiledCode = false
 }
 
 enum Gender {
@@ -21,34 +19,60 @@ enum Gender {
   FEMALE
 }
 
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+  ALL
+}
+
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  GRANDFATHER
+  GRANDMOTHER
+  LEGAL_GUARDIAN
+  OTHER
+}
+
 enum Role {
-  ADMIN
-  USER
+  TEACHER
+  STUDENT
+  GUARDIAN
   AUDITOR
+  ADMIN
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  uuid          String    @unique @db.VarChar(1000)
-  gender        Gender    @default(UNDEFINED)
-  firstName     String    @db.VarChar(255)
-  lastName      String    @db.VarChar(500)
-  birthDate     DateTime  @db.Date
-  username      String    @unique @db.VarChar(100)
-  email         String    @unique @db.VarChar(255)
-  phoneNumber   String    @db.VarChar(100)
-  address       String    @db.VarChar(1500)
-  profilePicUrl String    @db.VarChar(2500)
-  passwordHash  String    @db.VarChar(100)
-  verified      Boolean   @default(false)
-  enabled       Boolean   @default(true)
-  roles         Role[]    @default([USER])
-  createdAt     DateTime? @default(now()) @db.Timestamptz(3)
-  createdBy     String?   @db.VarChar(255)
-  updatedAt     DateTime? @default(now()) @updatedAt @db.Timestamptz(3)
-  updatedBy     String?   @db.VarChar(255)
-  deletedAt     DateTime? @db.Timestamptz(3)
-  deletedBy     String?   @db.VarChar(255)
+  id              Int              @id @default(autoincrement())
+  uuid            String           @unique @db.VarChar(1000)
+  gender          Gender           @default(UNDEFINED)
+  firstName       String           @db.VarChar(255)
+  lastName        String           @db.VarChar(500)
+  birthDate       DateTime         @db.Date
+  username        String           @unique @db.VarChar(100)
+  nid             String           @unique @db.VarChar(100)
+  email           String           @unique @db.VarChar(255)
+  phoneNumber     String           @db.VarChar(100)
+  address         String           @db.VarChar(1500)
+  profilePicUrl   String           @db.VarChar(2500)
+  passwordHash    String           @db.VarChar(100)
+  verified        Boolean          @default(false)
+  enabled         Boolean          @default(false)
+  roles           Role[]           @default([STUDENT])
+  teacherProfile  TeacherProfile?
+  studentProfile  StudentProfile?
+  guardianProfile GuardianProfile?
+  createdAt       DateTime?        @default(now()) @db.Timestamptz(3)
+  createdBy       String?          @db.VarChar(255)
+  updatedAt       DateTime?        @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy       String?          @db.VarChar(255)
+  deletedAt       DateTime?        @db.Timestamptz(3)
+  deletedBy       String?          @db.VarChar(255)
 }
 
 model Session {
@@ -67,4 +91,266 @@ model Session {
   updatedBy        String?   @db.VarChar(255)
   deletedAt        DateTime? @db.Timestamptz(3)
   deletedBy        String?   @db.VarChar(255)
+}
+
+model Academy {
+  id              Int               @id @default(autoincrement())
+  uuid            String            @unique @db.VarChar(1000)
+  code            String            @unique @db.VarChar(100)
+  name            String            @db.VarChar(255)
+  description     String            @db.VarChar(1000)
+  principal       String            @db.VarChar(255)
+  address         String            @db.VarChar(5000)
+  logoUrl         String            @db.VarChar(2500)
+  teacherProfiles TeacherProfile[]
+  studentProfiles StudentProfile[]
+  createdAt       DateTime?         @default(now()) @db.Timestamptz(3)
+  createdBy       String?           @db.VarChar(255)
+  updatedAt       DateTime?         @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy       String?           @db.VarChar(255)
+  deletedAt       DateTime?         @db.Timestamptz(3)
+  deletedBy       String?           @db.VarChar(255)
+  AcademySchedule AcademySchedule[]
+  AcademyTeacher  AcademyTeacher[]
+}
+
+model AcademicYear {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @db.VarChar(1000)
+  code        String    @unique @db.VarChar(100)
+  name        String    @db.VarChar(255)
+  description String    @db.VarChar(1000)
+  startDate   DateTime  @db.Date
+  endDate     DateTime  @db.Date
+  createdAt   DateTime? @default(now()) @db.Timestamptz(3)
+  createdBy   String?   @db.VarChar(255)
+  updatedAt   DateTime? @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy   String?   @db.VarChar(255)
+  deletedAt   DateTime? @db.Timestamptz(3)
+  deletedBy   String?   @db.VarChar(255)
+}
+
+model TeacherProfile {
+  id               Int              @id @default(autoincrement())
+  uuid             String           @unique @db.VarChar(1000)
+  userId           Int              @unique
+  user             User             @relation(fields: [userId], references: [id])
+  defaultAcademyId Int
+  defaultAcademy   Academy          @relation(fields: [defaultAcademyId], references: [id])
+  createdAt        DateTime?        @default(now()) @db.Timestamptz(3)
+  createdBy        String?          @db.VarChar(255)
+  updatedAt        DateTime?        @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?          @db.VarChar(255)
+  deletedAt        DateTime?        @db.Timestamptz(3)
+  deletedBy        String?          @db.VarChar(255)
+  AcademyTeacher   AcademyTeacher[]
+}
+
+model StudentProfile {
+  id                               Int                 @id @default(autoincrement())
+  uuid                             String              @unique @db.VarChar(1000)
+  userId                           Int                 @unique
+  user                             User                @relation(fields: [userId], references: [id])
+  defaultAcademyId                 Int
+  defaultAcademy                   Academy             @relation(fields: [defaultAcademyId], references: [id])
+  allowAcademyNotifications        Boolean             @default(false)
+  allowSocialNetworksNotifications Boolean             @default(false)
+  allowEmailNotifications          Boolean             @default(false)
+  allowPostalNotifications         Boolean             @default(false)
+  allowCaptureImages               Boolean             @default(false)
+  allowPublishImages               Boolean             @default(false)
+  createdAt                        DateTime?           @default(now()) @db.Timestamptz(3)
+  createdBy                        String?             @db.VarChar(255)
+  updatedAt                        DateTime?           @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy                        String?             @db.VarChar(255)
+  deletedAt                        DateTime?           @db.Timestamptz(3)
+  deletedBy                        String?             @db.VarChar(255)
+  StudentGuardian                  StudentGuardian[]
+  StudentSchool                    StudentSchool[]
+  StudentSchedule                  StudentSchedule[]
+  StudentSubject                   StudentSubject[]
+  StudentExamResult                StudentExamResult[]
+  StudentTeacher                   StudentTeacher[]
+}
+
+model GuardianProfile {
+  id              Int               @id @default(autoincrement())
+  uuid            String            @unique @db.VarChar(1000)
+  userId          Int               @unique
+  user            User              @relation(fields: [userId], references: [id])
+  createdAt       DateTime?         @default(now()) @db.Timestamptz(3)
+  createdBy       String?           @db.VarChar(255)
+  updatedAt       DateTime?         @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy       String?           @db.VarChar(255)
+  deletedAt       DateTime?         @db.Timestamptz(3)
+  deletedBy       String?           @db.VarChar(255)
+  StudentGuardian StudentGuardian[]
+}
+
+model StudentGuardian {
+  id                Int                  @id @default(autoincrement())
+  studentProfileId  Int
+  studentProfile    StudentProfile       @relation(fields: [studentProfileId], references: [id])
+  guardianProfileId Int
+  guardianProfile   GuardianProfile      @relation(fields: [guardianProfileId], references: [id])
+  relationship      GuardianRelationship @default(OTHER)
+  startDate         DateTime             @db.Date
+  endDate           DateTime?            @db.Date
+  createdAt         DateTime?            @default(now()) @db.Timestamptz(3)
+  createdBy         String?              @db.VarChar(255)
+  updatedAt         DateTime?            @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy         String?              @db.VarChar(255)
+  deletedAt         DateTime?            @db.Timestamptz(3)
+  deletedBy         String?              @db.VarChar(255)
+}
+
+model School {
+  id            Int             @id @default(autoincrement())
+  uuid          String          @unique @db.VarChar(1000)
+  code          String          @unique @db.VarChar(100)
+  name          String          @db.VarChar(255)
+  description   String          @db.VarChar(1000)
+  principal     String          @db.VarChar(255)
+  address       String          @db.VarChar(5000)
+  logoUrl       String          @db.VarChar(2500)
+  createdAt     DateTime?       @default(now()) @db.Timestamptz(3)
+  createdBy     String?         @db.VarChar(255)
+  updatedAt     DateTime?       @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy     String?         @db.VarChar(255)
+  deletedAt     DateTime?       @db.Timestamptz(3)
+  deletedBy     String?         @db.VarChar(255)
+  StudentSchool StudentSchool[]
+}
+
+model StudentSchool {
+  id               Int            @id @default(autoincrement())
+  studentProfileId Int
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id])
+  schoolId         Int
+  school           School         @relation(fields: [schoolId], references: [id])
+  startDate        DateTime       @db.Date
+  endDate          DateTime?      @db.Date
+  createdAt        DateTime?      @default(now()) @db.Timestamptz(3)
+  createdBy        String?        @db.VarChar(255)
+  updatedAt        DateTime?      @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?        @db.VarChar(255)
+  deletedAt        DateTime?      @db.Timestamptz(3)
+  deletedBy        String?        @db.VarChar(255)
+}
+
+model AcademySchedule {
+  id        Int       @id @default(autoincrement())
+  academyId Int
+  academy   Academy   @relation(fields: [academyId], references: [id])
+  startDate DateTime  @db.Date
+  endDate   DateTime? @db.Date
+  dayOfWeek DayOfWeek @default(ALL)
+  startTime DateTime  @db.Time(0)
+  endTime   DateTime  @db.Time(0)
+  priority  Int       @default(0)
+  createdAt DateTime? @default(now()) @db.Timestamptz(3)
+  createdBy String?   @db.VarChar(255)
+  updatedAt DateTime? @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy String?   @db.VarChar(255)
+  deletedAt DateTime? @db.Timestamptz(3)
+  deletedBy String?   @db.VarChar(255)
+}
+
+model StudentSchedule {
+  id               Int            @id @default(autoincrement())
+  studentProfileId Int
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id])
+  startDate        DateTime       @db.Date
+  endDate          DateTime?      @db.Date
+  dayOfWeek        DayOfWeek      @default(ALL)
+  startTime        DateTime       @db.Time(0)
+  endTime          DateTime       @db.Time(0)
+  priority         Int            @default(0)
+  createdAt        DateTime?      @default(now()) @db.Timestamptz(3)
+  createdBy        String?        @db.VarChar(255)
+  updatedAt        DateTime?      @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?        @db.VarChar(255)
+  deletedAt        DateTime?      @db.Timestamptz(3)
+  deletedBy        String?        @db.VarChar(255)
+}
+
+model Subject {
+  id             Int              @id @default(autoincrement())
+  uuid           String           @unique @db.VarChar(1000)
+  code           String           @unique @db.VarChar(100)
+  name           String           @db.VarChar(255)
+  description    String           @db.VarChar(1000)
+  createdAt      DateTime?        @default(now()) @db.Timestamptz(3)
+  createdBy      String?          @db.VarChar(255)
+  updatedAt      DateTime?        @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy      String?          @db.VarChar(255)
+  deletedAt      DateTime?        @db.Timestamptz(3)
+  deletedBy      String?          @db.VarChar(255)
+  StudentSubject StudentSubject[]
+}
+
+model StudentSubject {
+  id                 Int                 @id @default(autoincrement())
+  studentProfileId   Int
+  studentProfile     StudentProfile      @relation(fields: [studentProfileId], references: [id])
+  subjectId          Int
+  subject            Subject             @relation(fields: [subjectId], references: [id])
+  startDate          DateTime            @db.Date
+  endDate            DateTime?           @db.Date
+  studentExamResults StudentExamResult[]
+  createdAt          DateTime?           @default(now()) @db.Timestamptz(3)
+  createdBy          String?             @db.VarChar(255)
+  updatedAt          DateTime?           @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy          String?             @db.VarChar(255)
+  deletedAt          DateTime?           @db.Timestamptz(3)
+  deletedBy          String?             @db.VarChar(255)
+}
+
+model StudentExamResult {
+  id               Int            @id @default(autoincrement())
+  studentProfileId Int
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id])
+  studentSubjectId Int
+  studentSubject   StudentSubject @relation(fields: [studentSubjectId], references: [id])
+  score            Int
+  createdAt        DateTime?      @default(now()) @db.Timestamptz(3)
+  createdBy        String?        @db.VarChar(255)
+  updatedAt        DateTime?      @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?        @db.VarChar(255)
+  deletedAt        DateTime?      @db.Timestamptz(3)
+  deletedBy        String?        @db.VarChar(255)
+}
+
+model AcademyTeacher {
+  id               Int              @id @default(autoincrement())
+  academyId        Int
+  academy          Academy          @relation(fields: [academyId], references: [id])
+  teacherProfileId Int
+  teacherProfile   TeacherProfile   @relation(fields: [teacherProfileId], references: [id])
+  startDate        DateTime         @db.Date
+  endDate          DateTime?        @db.Date
+  createdAt        DateTime?        @default(now()) @db.Timestamptz(3)
+  createdBy        String?          @db.VarChar(255)
+  updatedAt        DateTime?        @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?          @db.VarChar(255)
+  deletedAt        DateTime?        @db.Timestamptz(3)
+  deletedBy        String?          @db.VarChar(255)
+  StudentTeacher   StudentTeacher[]
+}
+
+model StudentTeacher {
+  id               Int            @id @default(autoincrement())
+  studentProfileId Int
+  studentProfile   StudentProfile @relation(fields: [studentProfileId], references: [id])
+  academyTeacherId Int
+  academyTeacher   AcademyTeacher @relation(fields: [academyTeacherId], references: [id])
+  startDate        DateTime       @db.Date
+  endDate          DateTime?      @db.Date
+  priority         Int            @default(0)
+  createdAt        DateTime?      @default(now()) @db.Timestamptz(3)
+  createdBy        String?        @db.VarChar(255)
+  updatedAt        DateTime?      @default(now()) @updatedAt @db.Timestamptz(3)
+  updatedBy        String?        @db.VarChar(255)
+  deletedAt        DateTime?      @db.Timestamptz(3)
+  deletedBy        String?        @db.VarChar(255)
 }
